@@ -16,7 +16,7 @@
 
 **Design Philosophy and Architecture**
 
-Jolt is a zkVM designed around the principle of "Just One Lookup Table"[^6], implementing a novel approach to zero-knowledge virtual machines. The system is built specifically for RISC-V and emphasizes simplicity and extensibility over other design goals. Rather than using traditional STARK-based approaches, Jolt employs a custom protocol centered on Lasso lookup arguments[^7] combined with sum-check protocols for efficient constraint satisfaction.
+Jolt is a zkVM designed around the principle of "Just One Lookup Table"[^6], implementing a novel approach to zero-knowledge virtual machines. The system is built specifically for RISC-V and emphasizes simplicity and extensibility over other design goals. Rather than using traditional STARK-based approaches, Jolt employs a custom protocol centered on Shout lookup arguments[^7] combined with sum-check protocols for efficient constraint satisfaction.
 
 The architecture prioritizes proving simplicity through lookup tables rather than complex constraint systems. Jolt decomposes RISC-V instruction execution into lookups against precomputed tables, avoiding the need for complex arithmetic circuits that characterize other zkVM designs. This "lookup singularity" approach trades some generality for significant improvements in proving time and system complexity.
 
@@ -34,7 +34,7 @@ Key components include bytecode preprocessing[^12] that converts the program bin
 
 **Constraint System and Arithmetization**
 
-Rather than using traditional R1CS or AIR-based constraint systems, Jolt employs a hybrid approach combining Lasso lookup arguments with sum-check protocols[^14]. The constraint generation focuses on three main areas: instruction lookups (validating that each instruction execution is correct), memory consistency (ensuring memory reads/writes are coherent), and register file management.
+Rather than using traditional R1CS or AIR-based constraint systems, Jolt employs a hybrid approach combining Shout lookup arguments with sum-check protocols[^14]. The constraint generation focuses on three main areas: instruction lookups (validating that each instruction execution is correct), memory consistency (ensuring memory reads/writes are coherent), and register file management.
 
 The system uses specialized sum-check instances for different components: bytecode checking, memory checking, register checking, and instruction lookup validation[^15]. This modular approach allows for efficient proving by avoiding monolithic constraint systems.
 
@@ -46,7 +46,7 @@ The proving process uses the Dory polynomial commitment scheme over the BN254 cu
 
 **Verification and Deployment**
 
-The verification process validates the sum-check proofs and polynomial openings without requiring knowledge of the execution trace[^18]. The verifier performs approximately 10 sum-check verifications covering instruction lookups, memory checking, and register operations, along with validating polynomial commitment openings.
+The verification process validates the sum-check proofs and polynomial openings without requiring knowledge of the execution trace[^18]. The verifier performs approximately 5 sum-check verifications covering instruction lookups, memory checking, and register operations, along with validating polynomial commitment openings.
 
 Verification costs are estimated at approximately 2 million gas for on-chain EVM deployment[^19], with proof sizes in the dozens of kilobytes. The system includes plans for Groth16 composition to reduce on-chain verification costs through proof compression techniques.
 
@@ -75,20 +75,20 @@ The non-recursive approach to space control represents another key differentiato
 - **Backend Model** - Fixed[^29]
 
 ### Proof System Framework
-- **Framework Name** - Custom Jolt Protocol (Lasso + Sum-check)[^30]
+- **Framework Name** - Custom Jolt Protocol (Shout + Sum-check)[^30]
 - **Framework Version** - v1.1.1
 - **Constraint Language** - Custom lookup + sum-check DSL[^31]
 
 ### Default Backend Configuration:
 - **Backend/Config Name** - JoltRV32IM[^32]
 - **Proof System Type** - Hybrid (Custom lookup arguments + sum-check)[^33]
-- **Arithmetization** - Custom (Lasso lookup arguments)[^34]
+- **Arithmetization** - Custom (Shout lookup arguments)[^34]
 - **Field/Curve** - BN254[^35]
 - **Field Size** - 254 bits[^36]
 - **Field Modulus** - BN254 scalar field modulus[^37]
 - **Commitment Scheme** - Dory[^38]
 - **Hash Function** - Blake2b[^39]
-- **Trusted Setup Required** - Inherited (uses Dory's universal setup)[^40]
+- **Trusted Setup Required** - None (Dory is transparent with square-root-sized commitment key of random group elements)[^40]
 - **Default Backend** - Yes
 
 ### Post-Quantum Security

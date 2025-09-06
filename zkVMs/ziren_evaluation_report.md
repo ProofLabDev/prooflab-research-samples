@@ -1,13 +1,13 @@
-# ZKVM Evaluation Report: Ziren ZKVM System (v1.1.2)
+# ZKVM Evaluation Report: Ziren ZKVM System (v1.1.4)
 
 ## Basic Information
 - **Name** - Ziren ZKVM
 - **Team Affiliation** - ProjectZKM
 - **Repositories Considered:**
   - **Ziren** - Core Ziren zkVM implementation
-    - **Version Number** - v1.1.2-7-g983f934
+    - **Version Number** - v1.1.4-2-gb08c6f0
     - **Repository URL** - https://github.com/ProjectZKM/Ziren
-    - **Commit** - 983f93405e172ee142221c2179926ee886c962b9
+    - **Commit** - b08c6f0dae02b0dce95e3e8b9a8c4f1c7e9d5f3a
   - **zkm-prover** - A parallel proving service for ZKM
     - **Version Number** - 36d7521
     - **Repository URL** - https://github.com/ProjectZKM/zkm-prover
@@ -32,7 +32,7 @@ The architecture integrates cutting-edge zero-knowledge proof systems by combini
 
 The virtual machine executes standard MIPS32r2 binaries through a comprehensive executor framework[^5]. Programs are loaded with a 4-byte aligned program counter, utilizing a 32-bit register file including specialized HI/LO registers for multiply-divide operations. The execution environment features a paged memory system supporting up to 4GB of addressable space with efficient load/store operations including unaligned access patterns through LWL/LWR and SWL/SWR instructions.
 
-The executor maintains deterministic execution traces while handling 76 distinct MIPS instruction opcodes[^6], organized into functional categories including ALU operations, control flow (branches/jumps), memory operations, and MIPS32r2-specific enhancements like bit field manipulation (EXT/INS), sign extension (SEB/SEH), and conditional moves (MOVZ/MOVN). Syscall handling provides access to 44 different system operations including cryptographic precompiles and I/O operations.
+The executor maintains deterministic execution traces while handling 56 distinct MIPS instruction opcodes[^6], organized into functional categories including ALU operations, control flow (branches/jumps), memory operations, and MIPS32r2-specific enhancements like bit field manipulation (EXT/INS), sign extension (SEB/SEH), and conditional moves (MOVZ/MOVN). Syscall handling provides access to 44 different system operations including cryptographic precompiles and I/O operations.
 
 **Trace Generation and Witness Construction**
 
@@ -134,24 +134,24 @@ Ziren's primary differentiation lies in its MIPS32r2 foundation, offering greate
 ### Post-Quantum Security
 - **Core Proof System Post-Quantum Security** - Secure[^28]
 - **Quantum-Vulnerable Components** - None (STARK core system uses only symmetric primitives and hash functions)
-- **Post-Quantum Alternative Available** - N.A. (Core system is already post-quantum secure)
+- **Post-Quantum Alternative Available** - Not yet available (Core system uses hash-to-curve in multiset hashing, planned to change in the future)
 - **Quantum Security Notes** - SNARK backends (Groth16/PLONK) rely on elliptic curve assumptions and are quantum-vulnerable, but the core STARK system with FRI commitments is post-quantum secure
 
 ## Acceleration Support
 
 ### Hardware Support
-- **Hardware Acceleration** - GPU-CUDA, CPU-AVX512, CPU-AVX2[^29]
+- **Hardware Acceleration** - GPU-CUDA, CPU-AVX512, CPU-AVX2 (provided by Plonky3)[^29]
 - **GPU Vendor Support** - NVIDIA[^30]
 
 ### GPU Code Availability and Licensing
-- **GPU Code in Repository** - Partial[^31]
-- **GPU Code License** - MIT OR Apache 2.0[^32]
+- **GPU Code in Repository** - No[^31]
+- **GPU Code License** - Not determined (GPU code is not open sourced)[^32]
 - **GPU Implementation Method** - External Libraries[^33]
-- **GPU Code Transparency** - Partial[^34]
+- **GPU Code Transparency** - None (GPU code not open sourced)[^34]
 
 ### General Acceleration Support
-- **Acceleration Open Source** - Partial[^35]
-- **Acceleration License** - MIT OR Apache 2.0
+- **Acceleration Open Source** - Partial (AVX2/AVX512 provided by Plonky3, GPU acceleration not open sourced)[^35]
+- **Acceleration License** - MIT OR Apache 2.0 for open source components
 
 ### Execution Distribution
 - **Prover Distribution** - Multi-threaded CPU, Single GPU, Multi-GPU (distributed), CPU cluster, Hybrid CPU+GPU[^36]
@@ -204,7 +204,7 @@ Ziren's primary differentiation lies in its MIPS32r2 foundation, offering greate
 - **External Dependencies** - Plonky3 (custom fork), GNARK FFI for SNARK generation
 
 ### Toolchain Integration
-- **Compiler Support** - Rust, C/C++[^50]
+- **Compiler Support** - Rust, C/CPP, Golang (reviewing)[^50]
 - **Compiler Version** - Custom MIPS32r2 toolchain, Rust 1.80+ for guest programs[^51]
 - **IDE Integration** - CLI, Web Interface (for verification)
 - **Debugging Support** - Limited[^52]
@@ -269,7 +269,7 @@ Ziren represents a unique and technically sophisticated approach to zero-knowled
 - **Trusted Setup Requirements**: SNARK backends require ceremony participation or trust
 
 **Licensing and Open Source Assessment:**
-The core Ziren implementation is fully open source under dual MIT/Apache 2.0 licensing, with complete source code availability including the VM implementation, proof generation, and verification components. However, GPU acceleration capabilities rely on external dependencies that may limit full code transparency and auditability. The zkm-prover distributed proving service is also open source, enabling scaling and customization.
+The core Ziren implementation is fully open source under dual MIT/Apache 2.0 licensing, with complete source code availability including the VM implementation, proof generation, and verification components. However, GPU acceleration capabilities are not open sourced and the license for GPU code is not yet determined, which limits full code transparency and auditability. The zkm-prover distributed proving service is also open source, enabling scaling and customization.
 
 **Recommendation:**
 Ziren is well-suited for research and development of MIPS-based zero-knowledge applications, particularly Bitcoin L2 implementations and hybrid rollup systems where MIPS toolchain maturity provides advantages. The system's comprehensive proof type support makes it valuable for applications requiring flexible verification strategies. However, production deployment should await security auditing and API stabilization. Organizations requiring full code transparency should evaluate GPU acceleration dependencies against performance requirements.
@@ -310,8 +310,8 @@ For teams prioritizing bleeding-edge MIPS zkVM capabilities and willing to work 
 [^28]: [STARK Post-Quantum Security - FRI Protocol](https://github.com/ProjectZKM/Ziren/blob/983f93405e172ee142221c2179926ee886c962b9/docs/src/design/stark.md)
 [^29]: [Hardware Acceleration Support](https://github.com/ProjectZKM/Ziren/blob/983f93405e172ee142221c2179926ee886c962b9/docs/src/introduction/overview.md#L48-L50)
 [^30]: [CUDA Feature Flag](https://github.com/ProjectZKM/Ziren/blob/983f93405e172ee142221c2179926ee886c962b9/crates/sdk/Cargo.toml#L94)
-[^31]: [GPU Feature Flag Present](https://github.com/ProjectZKM/Ziren/blob/983f93405e172ee142221c2179926ee886c962b9/crates/sdk/Cargo.toml#L94)
-[^32]: [License Applied to All Components](https://github.com/ProjectZKM/Ziren/blob/983f93405e172ee142221c2179926ee886c962b9/Cargo.toml#L4)
+[^31]: [GPU Code Not Open Sourced](https://github.com/ProjectZKM/Ziren/issues/feedback)
+[^32]: [GPU License Not Determined](https://github.com/ProjectZKM/Ziren/issues/feedback)
 [^33]: [Commented CUDA Dependency](https://github.com/ProjectZKM/Ziren/blob/983f93405e172ee142221c2179926ee886c962b9/crates/sdk/Cargo.toml#L26)
 [^34]: [GPU Code in External Dependencies](https://github.com/ProjectZKM/Ziren/blob/983f93405e172ee142221c2179926ee886c962b9/crates/sdk/Cargo.toml#L93-L94)
 [^35]: [Open Source with External Dependencies](https://github.com/ProjectZKM/Ziren/blob/983f93405e172ee142221c2179926ee886c962b9/crates/sdk/Cargo.toml#L26)
@@ -329,7 +329,7 @@ For teams prioritizing bleeding-edge MIPS zkVM capabilities and willing to work 
 [^47]: [Evolving APIs](https://github.com/ProjectZKM/Ziren/blob/983f93405e172ee142221c2179926ee886c962b9/Cargo.toml#L2)
 [^48]: [Rust Toolchain Configuration](https://github.com/ProjectZKM/Ziren/blob/983f93405e172ee142221c2179926ee886c962b9/rust-toolchain.toml)
 [^49]: [Build Requirements](https://github.com/ProjectZKM/Ziren/blob/983f93405e172ee142221c2179926ee886c962b9/Cargo.toml#L5)
-[^50]: [Compiler Support Examples](https://github.com/ProjectZKM/Ziren/blob/983f93405e172ee142221c2179926ee886c962b9/examples/fibonacci_c_lib)
+[^50]: [Compiler Support Examples - C/CPP](https://github.com/ProjectZKM/Ziren/tree/main/examples/fibonacci_c_lib), [Golang Support - Reviewing](https://github.com/ProjectZKM/Ziren/pull/254)
 [^51]: [Rust Version Requirement](https://github.com/ProjectZKM/Ziren/blob/983f93405e172ee142221c2179926ee886c962b9/Cargo.toml#L5)
 [^52]: [Debug Support](https://github.com/ProjectZKM/Ziren/blob/983f93405e172ee142221c2179926ee886c962b9/crates/stark/src/debug.rs)
 [^53]: [Performance Profiling](https://github.com/ProjectZKM/Ziren/blob/983f93405e172ee142221c2179926ee886c962b9/docs/src/introduction/performance.md)
